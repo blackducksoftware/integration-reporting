@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.pdf;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.io.File;
@@ -45,8 +45,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 
-import com.blackducksoftware.integration.log.IntLogger;
-
 public class PDFBoxManager implements Closeable {
     public static final PDFont DEFAULT_FONT = PDType1Font.HELVETICA;
     public static final PDFont DEFAULT_FONT_BOLD = PDType1Font.HELVETICA_BOLD;
@@ -54,12 +52,10 @@ public class PDFBoxManager implements Closeable {
     public static final Color DEFAULT_COLOR = Color.BLACK;
     public final File outputFile;
     public final PDDocument document;
-    private final IntLogger logger;
     public PDPage currentPage;
     private PDPageContentStream contentStream;
 
-    public PDFBoxManager(final IntLogger logger, final File outputFile, final PDDocument document) throws IOException {
-        this.logger = logger;
+    public PDFBoxManager(final File outputFile, final PDDocument document) throws IOException {
         this.outputFile = outputFile;
         this.document = document;
         this.currentPage = new PDPage();

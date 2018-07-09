@@ -33,7 +33,6 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
 public class StringManager {
-
     public static List<String> wrapToCombinedList(final String str, final int charLimit) throws IOException {
         return wrapToCombinedList(PDFBoxManager.DEFAULT_FONT, PDFBoxManager.DEFAULT_FONT_SIZE, str, charLimit);
     }
