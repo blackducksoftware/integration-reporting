@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.pdf;
+package com.synopsys.integration.pdf;
 
 import java.io.IOException;
 import java.util.ArrayList;

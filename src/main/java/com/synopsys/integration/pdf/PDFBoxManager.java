@@ -21,9 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.pdf;
+package com.synopsys.integration.pdf;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.io.File;

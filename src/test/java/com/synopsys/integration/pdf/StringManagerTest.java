@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.pdf;
+package com.synopsys.integration.pdf;
 
 import java.io.IOException;
 
