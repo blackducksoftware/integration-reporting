@@ -9,13 +9,13 @@ buildscript {
 
 plugins { id 'groovy' }
 
-version = '0.1.5-SNAPSHOT'
+version = '0.1.6-SNAPSHOT'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
 dependencies {
-    compile 'com.blackducksoftware.integration:integration-common:15.0.0'
-    compile 'org.apache.pdfbox:pdfbox:2.0.9'
+    implementation 'com.blackducksoftware.integration:integration-common:15.0.0'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.12'
 
-    testCompile 'org.codehaus.groovy:groovy-all:2.4.12'
+    testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
 }

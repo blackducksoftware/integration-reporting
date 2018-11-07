@@ -1,14 +1,15 @@
 package com.synopsys.integration.pdf;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class StringManagerTest {
     @Test
     public void testStringWidth() throws IOException {
-        Assert.assertTrue(0 < StringManager.getStringWidth("some text"));
+        assertTrue(0 < StringManager.getStringWidth("some text"));
     }
 
 }
