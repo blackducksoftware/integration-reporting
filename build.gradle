@@ -14,7 +14,7 @@ version = '0.1.7-SNAPSHOT'
 apply plugin: 'com.blackducksoftware.integration.library'
 
 dependencies {
-    implementation 'com.blackducksoftware.integration:integration-common:15.1.0'
+    implementation 'com.blackducksoftware.integration:integration-common:15.2.0'
     implementation 'org.apache.pdfbox:pdfbox:2.0.12'
 
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
