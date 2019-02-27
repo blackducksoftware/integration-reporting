@@ -9,12 +9,16 @@ buildscript {
 
 plugins { id 'groovy' }
 
-version = '0.1.9-SNAPSHOT'
+project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
+project.ext.javaUseAutoModuleName = 'true'
+
+version = '0.2.0'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
 dependencies {
-    implementation 'com.blackducksoftware.integration:integration-common:15.3.1'
+    api 'com.blackducksoftware.integration:integration-common:16.0.0'
+
     implementation 'org.apache.pdfbox:pdfbox:2.0.12'
 
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
