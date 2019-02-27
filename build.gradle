@@ -18,8 +18,7 @@ apply plugin: 'com.blackducksoftware.integration.library'
 
 dependencies {
     api 'com.blackducksoftware.integration:integration-common:16.0.0'
-
-    implementation 'org.apache.pdfbox:pdfbox:2.0.12'
+    api 'org.apache.pdfbox:pdfbox:2.0.12'
 
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
 }
