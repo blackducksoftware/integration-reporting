@@ -12,7 +12,7 @@ plugins { id 'groovy' }
 project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
 project.ext.javaUseAutoModuleName = 'true'
 
-version = '0.2.0'
+version = '0.3.0'
 
 apply plugin: 'com.blackducksoftware.integration.library'
 
