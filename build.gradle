@@ -12,7 +12,7 @@ plugins { id 'groovy' }
 project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
 project.ext.javaUseAutoModuleName = 'true'
 
-version = '0.3.2'
+version = '0.3.3-SNAPSHOT'
 description = 'A library for wrapping report and pdf generation.'
 
 apply plugin: 'com.blackducksoftware.integration.library'
