@@ -25,17 +25,13 @@ package com.synopsys.integration.pdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
 public class StringManager {
-    public static List<String> wrapToCombinedList(final String str, final int charLimit) throws IOException {
-        return wrapToCombinedList(PDFBoxManager.DEFAULT_FONT, PDFBoxManager.DEFAULT_FONT_SIZE, str, charLimit);
-    }
-
     public static List<String> wrapToCombinedList(final PDFont font, final float fontSize, final String str, final int charLimit) throws IOException {
         final ArrayList<String> subWords = new ArrayList<>(Arrays.asList(str.split(" ")));
         String previousBrokenWord = "";
@@ -83,14 +79,8 @@ public class StringManager {
         return finalStrings;
     }
 
-    public static float getStringWidth(final String text) throws IOException {
-        final String fixedText = replaceUnsupportedCharacters(text);
-        final float rawLength = PDFBoxManager.DEFAULT_FONT.getStringWidth(fixedText);
-        return rawLength * (PDFBoxManager.DEFAULT_FONT_SIZE / 960f);
-    }
-
     public static float getStringWidth(final PDFont font, final float fontSize, final String text) throws IOException {
-        final String fixedText = replaceUnsupportedCharacters(text);
+        final String fixedText = replaceUnsupportedCharacters(text, font);
         final float rawLength = font.getStringWidth(fixedText);
         return rawLength * (fontSize / 960f);
     }
@@ -133,15 +123,35 @@ public class StringManager {
         return finalStrings;
     }
 
-    public static String replaceUnsupportedCharacters(final String text) {
-        final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
-            if (WinAnsiEncoding.INSTANCE.contains(text.charAt(i))) {
-                builder.append(text.charAt(i));
-            } else {
-                builder.append("?");
+    public static String replaceUnsupportedCharacters(final String text, final PDFont font) {
+        return replaceUnsupportedCharacters(text, Collections.singletonList(font));
+    }
+
+    public static String replaceUnsupportedCharacters(final String text, final List<PDFont> fonts) {
+        String result = "";
+        if (text.length() > 0) {
+            for (int i = 0; i < text.length(); ) {
+                final int codePoint = text.codePointAt(i);
+                final int codeChars = Character.charCount(codePoint);
+                final String codePointString = text.substring(i, i + codeChars);
+                boolean canEncode = false;
+                for (final PDFont font : fonts) {
+                    try {
+                        font.encode(codePointString);
+                        canEncode = true;
+                        break;
+                    } catch (final Exception ioe) {
+                        // Font cannot encode glyph. Glyph will be replaced
+                    }
+                }
+                if (canEncode) {
+                    result += codePointString;
+                } else {
+                    result += "?";
+                }
+                i += codeChars;
             }
         }
-        return builder.toString();
+        return result;
     }
 }
