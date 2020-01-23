@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
-    dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+' }
+    dependencies { classpath 'com.synopsys.integration:common-gradle-plugin:1.0.0' }
 }
 
 plugins { id 'groovy' }
@@ -11,13 +11,13 @@ plugins { id 'groovy' }
 project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
 project.ext.javaUseAutoModuleName = 'true'
 
-version = '0.4.4-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 description = 'A library for wrapping report and pdf generation.'
 
-apply plugin: 'com.blackducksoftware.integration.library'
+apply plugin: 'com.synopsys.integration.library'
 
 dependencies {
-    api 'com.blackducksoftware.integration:integration-common:18.0.1'
+    api 'com.synopsys.integration:integration-common:19.0.0'
     api 'org.apache.pdfbox:pdfbox:2.0.12'
 
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
