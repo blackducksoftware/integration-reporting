@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
-    dependencies { classpath 'com.synopsys.integration:common-gradle-plugin:1.0.0' }
+    dependencies { classpath 'com.synopsys.integration:common-gradle-plugin:0.0.+' }
 }
 
 plugins { id 'groovy' }
@@ -11,7 +11,7 @@ plugins { id 'groovy' }
 project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
 project.ext.javaUseAutoModuleName = 'true'
 
-version = '1.0.0'
+version = '1.0.1-SNAPSHOT'
 description = 'A library for wrapping report and pdf generation.'
 
 apply plugin: 'com.synopsys.integration.library'
