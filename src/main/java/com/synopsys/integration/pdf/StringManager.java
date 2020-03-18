@@ -27,51 +27,55 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
 public class StringManager {
     public static List<String> wrapToCombinedList(final PDFont font, final float fontSize, final String str, final int charLimit) throws IOException {
-        final ArrayList<String> subWords = new ArrayList<>(Arrays.asList(str.split(" ")));
+        final List<String> words = new ArrayList<>(Arrays.asList(str.split(" ")));
         String previousBrokenWord = "";
         // break up string if it is too long
-        for (int i = 0; i < subWords.size(); i++) {
-            final String currentSubWord = subWords.get(i);
-            final float stringWidth = getStringWidth(font, fontSize, currentSubWord);
+        for (int i = 0; i < words.size(); i++) {
+            final String word = words.get(i);
+            final float stringWidth = getStringWidth(font, fontSize, word);
             if (stringWidth > charLimit) {
-                if (previousBrokenWord.equals(currentSubWord)) {
+                if (previousBrokenWord.equals(word)) {
                     continue;
                 }
-                previousBrokenWord = currentSubWord;
-                subWords.remove(currentSubWord);
-                final List<String> brokenStrings = breakWrapString(font, fontSize, currentSubWord, charLimit);
-                subWords.addAll(i, brokenStrings);
+                previousBrokenWord = word;
+                words.remove(word);
+                final List<String> brokenStrings = breakWrapString(font, fontSize, word, charLimit);
+                words.addAll(i, brokenStrings);
             }
         }
+
+        List<String> nonBlankWords = words
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
 
         final List<String> finalStrings = new ArrayList<>();
         String currentStringCombo = "";
         // combine strings if possible
-        for (final String currentSubWord : subWords) {
-            if (StringUtils.isBlank(currentSubWord)) {
-                continue;
-            }
-            if (getStringWidth(font, fontSize, currentStringCombo) + getStringWidth(font, fontSize, currentSubWord) > charLimit) {
+        for (final String word : nonBlankWords) {
+            if (getStringWidth(font, fontSize, currentStringCombo) + getStringWidth(font, fontSize, word) > charLimit) {
                 if (StringUtils.isBlank(currentStringCombo)) {
-                    finalStrings.add(currentSubWord);
+                    finalStrings.add(word);
                 } else {
                     finalStrings.add(currentStringCombo);
-                    currentStringCombo = currentSubWord;
+                    currentStringCombo = word;
                 }
             } else {
                 if (StringUtils.isBlank(currentStringCombo)) {
-                    currentStringCombo = currentSubWord;
+                    currentStringCombo = word;
                 } else {
-                    currentStringCombo += " " + currentSubWord;
+                    currentStringCombo += " " + word;
                 }
             }
         }
+
         if (currentStringCombo.length() > 0) {
             finalStrings.add(currentStringCombo);
         }
