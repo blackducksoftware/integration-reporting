@@ -164,7 +164,7 @@ public class PDFBoxManager implements Closeable {
     }
 
     public PDRectangle writeWrappedText(final float x, final float y, final float width, final String text, final PDFont font, final float fontSize, final Color color) throws IOException {
-        final List<String> textLines = StringManager.wrapToCombinedList(font, fontSize, text, Math.round(width));
+        final List<String> textLines = StringManager.wrapToCombinedList(font, fontSize, text, width);
         return writeWrappedText(x, y, width, textLines, font, fontSize, color);
     }
 

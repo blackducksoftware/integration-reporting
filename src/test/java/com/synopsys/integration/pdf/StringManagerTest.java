@@ -29,28 +29,15 @@ public class StringManagerTest {
         assertEquals(stringWrappingData.expectedResults, actualResults);
     }
 
-    @Test
-    public void testReallyLongRepeatedString() throws IOException {
-        String original = "reallyreallylonglong reallyreallylonglong reallyreallylonglonglong reallyreallylonglong reallyreallylonglong reallyreally longlonglong pants";
-        StringWrappingData longRepeated = new StringWrappingData(10.0f, original, 25, Arrays.asList("happy", "monkeyday"));
-        List<String> actualResults = getActualResults(longRepeated);
-        System.out.println(original);
-        System.out.println(StringUtils.join(actualResults, " "));
-//        assertEquals(longRepeated.expectedResults, actualResults);
-    }
-
-    @Test
-    public void testStringRemoving() {
-        List<String> allTheWords = new ArrayList<>(Arrays.asList("monkey", "cat", "monkey", "bird", "dog", "bird", "monkey"));
-        allTheWords.remove("monkey");
-        System.out.println(StringUtils.join(allTheWords, " "));
-    }
-
     private List<String> getActualResults(StringWrappingData stringWrappingData) throws IOException {
         return StringManager.wrapToCombinedList(PDType1Font.HELVETICA, stringWrappingData.fontSize, stringWrappingData.text, stringWrappingData.characterLimit);
     }
 
     static Stream<StringWrappingData> provideStringWrappingDataStream() {
+        String longText = "reallyreallylonglong reallyreallylonglong reallyreallylonglonglong reallyreallylonglong reallyreallylonglong reallyreally longlonglong pants";
+        List<String> longResults = Arrays.asList("reallyreallylo", "nglong", "reallyreallylo", "nglonglong", "reallyreallylonglong", "reallyreallylonglong", "reallyreallylo", "nglong", "reallyreally", "longlonglong", "pants");
+        List<String> shortResults = Arrays.asList("rea", "llyr", "ea", "llyl", "on", "gl", "on", "rea", "llyr", "ea", "llyl", "on", "gl", "on", "gl", "on", "reallyreallylonglong", "reallyreallylonglong", "rea", "llyr", "ea", "llyl", "on", "gl", "on", "reallyreally", "lon", "gl", "on", "gl", "on", "pants");
+
         return Stream.of(
                 new StringWrappingData(1.0f, "happymonkeyday", 5, Arrays.asList("happymonke", "yday"))
                 ,new StringWrappingData(10.0f, "happymonkeyday", 5, Arrays.asList("ha", "pp", "ym", "on", "ke", "yd"))
@@ -61,6 +48,8 @@ public class StringManagerTest {
                 ,new StringWrappingData(10.0f, "happy monkey day", 50, Arrays.asList("happy", "monkey", "day"))
                 ,new StringWrappingData(10.0f, "happymonkey day", 50, Arrays.asList("happymonke", "day"))
                 ,new StringWrappingData(10.0f, "happy monkeyday", 50, Arrays.asList("happy", "monkeyday"))
+                ,new StringWrappingData(10.0f, longText, 50, longResults)
+                ,new StringWrappingData(10.0f, longText, 5, shortResults)
         );
     }
 
