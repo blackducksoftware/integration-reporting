@@ -34,26 +34,13 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 
 public class StringManager {
     public static List<String> wrapToCombinedList(final PDFont font, final float fontSize, final String str, final float widthLimit) throws IOException {
-        final List<String> words = new ArrayList<>(Arrays.asList(str.split(" ")));
+        List<String> nonBlankWords = breakIntoWordsIfTooLong(font, fontSize, str, widthLimit);
+        List<String> nonBlankTrimmedFinalStrings = recombineBrokenWordsIfPossible(font, fontSize, widthLimit, nonBlankWords);
 
-        // break up string if it is too long
-        for (int i = 0; i < words.size(); i++) {
-            final String word = words.get(i);
-            final float stringWidth = getStringWidth(font, fontSize, word);
-            if (stringWidth > widthLimit) {
-                words.remove(word);
-                final List<String> brokenStrings = breakWrapString(font, fontSize, word, widthLimit);
-                words.addAll(i, brokenStrings);
-                i = i + brokenStrings.size();
-            }
-        }
+        return nonBlankTrimmedFinalStrings;
+    }
 
-        List<String> nonBlankWords = words
-                .stream()
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toList());
-
-        // combine strings if possible
+    private static List<String> recombineBrokenWordsIfPossible(PDFont font, float fontSize, float widthLimit, List<String> nonBlankWords) throws IOException {
         List<String> finalStrings = new ArrayList<>();
         StringBuilder currentBuilder = new StringBuilder();
         for (final String word : nonBlankWords) {
@@ -68,13 +55,30 @@ public class StringManager {
 
         finalStrings.add(currentBuilder.toString());
 
-        List<String> nonBlankTrimmedFinalStrings = finalStrings
+        return finalStrings
                 .stream()
                 .filter(StringUtils::isNotBlank)
                 .map(StringUtils::trim)
                 .collect(Collectors.toList());
+    }
 
-        return nonBlankTrimmedFinalStrings;
+    private static List<String> breakIntoWordsIfTooLong(PDFont font, float fontSize, String str, float widthLimit) throws IOException {
+        final List<String> words = new ArrayList<>(Arrays.asList(str.split(" ")));
+        for (int i = 0; i < words.size(); i++) {
+            final String word = words.get(i);
+            final float stringWidth = getStringWidth(font, fontSize, word);
+            if (stringWidth > widthLimit) {
+                words.remove(word);
+                final List<String> brokenStrings = breakWrapString(font, fontSize, word, widthLimit);
+                words.addAll(i, brokenStrings);
+                i = i + brokenStrings.size();
+            }
+        }
+
+        return words
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
     }
 
     private static boolean wouldExceedLimit(StringBuilder builder, String toAdd, final PDFont font, final float fontSize, float widthLimit) throws IOException {
