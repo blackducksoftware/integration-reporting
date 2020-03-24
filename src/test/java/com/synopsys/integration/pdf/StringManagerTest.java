@@ -3,18 +3,17 @@ package com.synopsys.integration.pdf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class StringManagerTest {
     @Test
@@ -30,7 +29,7 @@ public class StringManagerTest {
     }
 
     private List<String> getActualResults(StringWrappingData stringWrappingData) throws IOException {
-        return StringManager.wrapToCombinedList(PDType1Font.HELVETICA, stringWrappingData.fontSize, stringWrappingData.text, stringWrappingData.characterLimit);
+        return StringManager.wrapToCombinedList(PDType1Font.HELVETICA, stringWrappingData.fontSize, stringWrappingData.text, stringWrappingData.widthLimit);
     }
 
     static Stream<StringWrappingData> provideStringWrappingDataStream() {
@@ -56,13 +55,13 @@ public class StringManagerTest {
     private static class StringWrappingData {
         public float fontSize;
         public String text;
-        int characterLimit;
+        int widthLimit;
         List<String> expectedResults;
 
-        public StringWrappingData(float fontSize, String text, int characterLimit, List<String> expectedResults) {
+        public StringWrappingData(float fontSize, String text, int widthLimit, List<String> expectedResults) {
             this.fontSize = fontSize;
             this.text = text;
-            this.characterLimit = characterLimit;
+            this.widthLimit = widthLimit;
             this.expectedResults = expectedResults;
         }
     }

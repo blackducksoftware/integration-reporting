@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class StringManager {
     public static List<String> wrapToCombinedList(final PDFont font, final float fontSize, final String str, final float widthLimit) throws IOException {
@@ -38,6 +39,25 @@ public class StringManager {
         List<String> nonBlankTrimmedFinalStrings = recombineBrokenWordsIfPossible(font, fontSize, widthLimit, nonBlankWords);
 
         return nonBlankTrimmedFinalStrings;
+    }
+
+    private static List<String> breakIntoWordsIfTooLong(PDFont font, float fontSize, String str, float widthLimit) throws IOException {
+        final List<String> words = new ArrayList<>(Arrays.asList(str.split(" ")));
+        for (int i = 0; i < words.size(); i++) {
+            final String word = words.get(i);
+            final float stringWidth = getStringWidth(font, fontSize, word);
+            if (stringWidth > widthLimit) {
+                words.remove(word);
+                final List<String> brokenStrings = breakWrapString(font, fontSize, word, widthLimit);
+                words.addAll(i, brokenStrings);
+                i = i + brokenStrings.size();
+            }
+        }
+
+        return words
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
     }
 
     private static List<String> recombineBrokenWordsIfPossible(PDFont font, float fontSize, float widthLimit, List<String> nonBlankWords) throws IOException {
@@ -62,25 +82,6 @@ public class StringManager {
                 .collect(Collectors.toList());
     }
 
-    private static List<String> breakIntoWordsIfTooLong(PDFont font, float fontSize, String str, float widthLimit) throws IOException {
-        final List<String> words = new ArrayList<>(Arrays.asList(str.split(" ")));
-        for (int i = 0; i < words.size(); i++) {
-            final String word = words.get(i);
-            final float stringWidth = getStringWidth(font, fontSize, word);
-            if (stringWidth > widthLimit) {
-                words.remove(word);
-                final List<String> brokenStrings = breakWrapString(font, fontSize, word, widthLimit);
-                words.addAll(i, brokenStrings);
-                i = i + brokenStrings.size();
-            }
-        }
-
-        return words
-                .stream()
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toList());
-    }
-
     private static boolean wouldExceedLimit(StringBuilder builder, String toAdd, final PDFont font, final float fontSize, float widthLimit) throws IOException {
         return getStringWidth(font, fontSize, builder.toString()) + getStringWidth(font, fontSize, toAdd) > widthLimit;
     }
@@ -88,6 +89,7 @@ public class StringManager {
     public static float getStringWidth(final PDFont font, final float fontSize, final String text) throws IOException {
         final String fixedText = replaceUnsupportedCharacters(text, font);
         final float rawLength = font.getStringWidth(fixedText);
+        //TODO evaluate why we are not using 1000f???
         return rawLength * (fontSize / 960f);
     }
 
@@ -160,4 +162,5 @@ public class StringManager {
         }
         return result;
     }
+
 }
