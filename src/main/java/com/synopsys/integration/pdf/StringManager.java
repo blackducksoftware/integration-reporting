@@ -27,72 +27,80 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class StringManager {
-    public static List<String> wrapToCombinedList(final PDFont font, final float fontSize, final String str, final int charLimit) throws IOException {
-        final ArrayList<String> subWords = new ArrayList<>(Arrays.asList(str.split(" ")));
-        String previousBrokenWord = "";
-        // break up string if it is too long
-        for (int i = 0; i < subWords.size(); i++) {
-            final String currentSubWord = subWords.get(i);
-            final float stringWidth = getStringWidth(font, fontSize, currentSubWord);
-            if (stringWidth > charLimit) {
-                if (previousBrokenWord.equals(currentSubWord)) {
-                    continue;
-                }
-                previousBrokenWord = currentSubWord;
-                subWords.remove(currentSubWord);
-                final List<String> brokenStrings = breakWrapString(font, fontSize, currentSubWord, charLimit);
-                subWords.addAll(i, brokenStrings);
+    public static List<String> wrapToCombinedList(final PDFont font, final float fontSize, final String str, final float widthLimit) throws IOException {
+        List<String> nonBlankWords = breakIntoWordsIfTooLong(font, fontSize, str, widthLimit);
+        List<String> nonBlankTrimmedFinalStrings = recombineBrokenWordsIfPossible(font, fontSize, widthLimit, nonBlankWords);
+
+        return nonBlankTrimmedFinalStrings;
+    }
+
+    private static List<String> breakIntoWordsIfTooLong(PDFont font, float fontSize, String str, float widthLimit) throws IOException {
+        final List<String> words = new ArrayList<>(Arrays.asList(str.split(" ")));
+        for (int i = 0; i < words.size(); i++) {
+            final String word = words.get(i);
+            final float stringWidth = getStringWidth(font, fontSize, word);
+            if (stringWidth > widthLimit) {
+                words.remove(word);
+                final List<String> brokenStrings = breakWrapString(font, fontSize, word, widthLimit);
+                words.addAll(i, brokenStrings);
+                i = i + brokenStrings.size();
             }
         }
 
-        final List<String> finalStrings = new ArrayList<>();
-        String currentStringCombo = "";
-        // combine strings if possible
-        for (final String currentSubWord : subWords) {
-            if (StringUtils.isBlank(currentSubWord)) {
-                continue;
-            }
-            if (getStringWidth(font, fontSize, currentStringCombo) + getStringWidth(font, fontSize, currentSubWord) > charLimit) {
-                if (StringUtils.isBlank(currentStringCombo)) {
-                    finalStrings.add(currentSubWord);
-                } else {
-                    finalStrings.add(currentStringCombo);
-                    currentStringCombo = currentSubWord;
-                }
+        return words
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> recombineBrokenWordsIfPossible(PDFont font, float fontSize, float widthLimit, List<String> nonBlankWords) throws IOException {
+        List<String> finalStrings = new ArrayList<>();
+        StringBuilder currentBuilder = new StringBuilder();
+        for (final String word : nonBlankWords) {
+            if (wouldExceedLimit(currentBuilder, word, font, fontSize, widthLimit)) {
+                finalStrings.add(currentBuilder.toString());
+                currentBuilder = new StringBuilder(word);
             } else {
-                if (StringUtils.isBlank(currentStringCombo)) {
-                    currentStringCombo = currentSubWord;
-                } else {
-                    currentStringCombo += " " + currentSubWord;
-                }
+                currentBuilder.append(" ");
+                currentBuilder.append(word);
             }
         }
-        if (currentStringCombo.length() > 0) {
-            finalStrings.add(currentStringCombo);
-        }
 
-        return finalStrings;
+        finalStrings.add(currentBuilder.toString());
+
+        return finalStrings
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(StringUtils::trim)
+                .collect(Collectors.toList());
+    }
+
+    private static boolean wouldExceedLimit(StringBuilder builder, String toAdd, final PDFont font, final float fontSize, float widthLimit) throws IOException {
+        return getStringWidth(font, fontSize, builder.toString()) + getStringWidth(font, fontSize, toAdd) > widthLimit;
     }
 
     public static float getStringWidth(final PDFont font, final float fontSize, final String text) throws IOException {
         final String fixedText = replaceUnsupportedCharacters(text, font);
         final float rawLength = font.getStringWidth(fixedText);
+        //TODO evaluate why we are not using 1000f???
         return rawLength * (fontSize / 960f);
     }
 
-    public static List<String> breakWrapString(final PDFont font, final float fontSize, final String str, final int charLimit) throws IOException {
+    public static List<String> breakWrapString(final PDFont font, final float fontSize, final String str, final float widthLimit) throws IOException {
         int lastBreak = 0;
         float maxLengthCounter = 0;
         final int strLen = str.length();
         final ArrayList<String> brokenUpStrings = new ArrayList<>();
         // break up strings on non alphanumeric IF POSSIBLE
         for (int i = 1; i < strLen; i++) {
-            if (!StringUtils.isAlphanumeric(str.charAt(i) + "") || maxLengthCounter >= charLimit) {
+            if (!StringUtils.isAlphanumeric(str.charAt(i) + "") || maxLengthCounter >= widthLimit) {
                 brokenUpStrings.add(str.substring(lastBreak, i));
                 lastBreak = i;
                 maxLengthCounter = 0;
@@ -101,7 +109,7 @@ public class StringManager {
             }
         }
         // add remaining string to the list so nothing gets lost
-        if (brokenUpStrings.isEmpty() || (maxLengthCounter > 0 && maxLengthCounter < charLimit)) {
+        if (brokenUpStrings.isEmpty() || (maxLengthCounter > 0 && maxLengthCounter < widthLimit)) {
             brokenUpStrings.add(str.substring(lastBreak, strLen));
         }
 
@@ -109,7 +117,7 @@ public class StringManager {
         String currentStringCombo = "";
         // combine broken pieces if they will fit within the limit
         for (final String currentBrokenString : brokenUpStrings) {
-            if (getStringWidth(font, fontSize, currentStringCombo) + getStringWidth(font, fontSize, currentBrokenString) > charLimit) {
+            if (getStringWidth(font, fontSize, currentStringCombo) + getStringWidth(font, fontSize, currentBrokenString) > widthLimit) {
                 finalStrings.add(currentStringCombo);
                 currentStringCombo = currentBrokenString;
             } else {

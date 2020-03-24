@@ -17,7 +17,7 @@ jdk:
 notifications:
   email:
     recipients:
-    - starlabs@blackducksoftware.com
+    - starlabs@synopsys.com
 
 script:
 - "./gradlew clean build jacocoTestReport coveralls sonarqube"

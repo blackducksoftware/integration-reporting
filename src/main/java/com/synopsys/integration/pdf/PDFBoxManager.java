@@ -43,6 +43,8 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 
 public class PDFBoxManager implements Closeable {
+    public static final String BLUE_GRAY = "#46759E";
+
     public final File outputFile;
     public final PDDocument document;
     public PDPage currentPage;
@@ -162,7 +164,7 @@ public class PDFBoxManager implements Closeable {
     }
 
     public PDRectangle writeWrappedText(final float x, final float y, final float width, final String text, final PDFont font, final float fontSize, final Color color) throws IOException {
-        final List<String> textLines = StringManager.wrapToCombinedList(font, fontSize, text, Math.round(width));
+        final List<String> textLines = StringManager.wrapToCombinedList(font, fontSize, text, width);
         return writeWrappedText(x, y, width, textLines, font, fontSize, color);
     }
 
@@ -187,13 +189,13 @@ public class PDFBoxManager implements Closeable {
     }
 
     public PDRectangle writeLink(final float x, final float y, final String linkText, final String linkURL, final PDFont font, final float fontSize) throws IOException {
-        final PDRectangle rectangle = writeText(x, y, linkText, font, fontSize, Color.decode("#46759E"));
+        final PDRectangle rectangle = writeText(x, y, linkText, font, fontSize, Color.decode(BLUE_GRAY));
         addAnnotationLinkRectangle(rectangle.getLowerLeftX(), rectangle.getLowerLeftY(), rectangle.getWidth(), rectangle.getHeight(), linkURL);
         return rectangle;
     }
 
     public PDRectangle writeWrappedLink(final float x, final float y, final float width, final String linkText, final String linkURL, final PDFont font, final float fontSize) throws IOException {
-        return writeWrappedLink(x, y, width, linkText, linkURL, font, fontSize, Color.decode("#46759E"));
+        return writeWrappedLink(x, y, width, linkText, linkURL, font, fontSize, Color.decode(BLUE_GRAY));
     }
 
     public PDRectangle writeWrappedLink(final float x, final float y, final float width, final String linkText, final String linkURL, final PDFont font, final float fontSize, final Color color) throws IOException {
@@ -210,7 +212,7 @@ public class PDFBoxManager implements Closeable {
     }
 
     public PDRectangle writeWrappedLink(final float x, final float y, final float width, final List<String> linkTextLines, final String linkURL, final PDFont font, final float fontSize) throws IOException {
-        return writeWrappedLink(x, y, width, linkTextLines, linkURL, font, fontSize, Color.decode("#46759E"));
+        return writeWrappedLink(x, y, width, linkTextLines, linkURL, font, fontSize, Color.decode(BLUE_GRAY));
     }
 
     public PDRectangle writeWrappedCenteredLink(final float x, final float rowUpperY, final float width, final float height, final List<String> linkTextLines, final String linkURL, final PDFont font, final float fontSize, final Color color)
