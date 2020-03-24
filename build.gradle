@@ -8,7 +8,7 @@ plugins { id 'groovy' }
 project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
 project.ext.javaUseAutoModuleName = 'true'
 
-version = '1.0.2-SNAPSHOT'
+version = '1.0.3-SNAPSHOT'
 description = 'A library for wrapping report and pdf generation.'
 
 apply plugin: 'com.synopsys.integration.library'
