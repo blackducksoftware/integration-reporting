@@ -8,14 +8,14 @@ plugins { id 'groovy' }
 project.ext.moduleName = 'com.synopsys.integration.integration-reporting'
 project.ext.javaUseAutoModuleName = 'true'
 
-version = '1.0.4-SNAPSHOT'
+version = '2.0.0-SNAPSHOT'
 description = 'A library for wrapping report and pdf generation.'
 
 apply plugin: 'com.synopsys.integration.library'
 
 dependencies {
-    api 'com.synopsys.integration:integration-common:23.0.0'
-    api 'org.apache.pdfbox:pdfbox:2.0.12'
+    api 'com.synopsys.integration:integration-common:24.0.0'
+    api 'org.apache.pdfbox:pdfbox:2.0.21'
 
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.3.1'
