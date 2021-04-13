@@ -14,7 +14,7 @@ description = 'A library for wrapping report and pdf generation.'
 apply plugin: 'com.synopsys.integration.library'
 
 dependencies {
-    api 'com.synopsys.integration:integration-common:24.2.0'
+    api 'com.synopsys.integration:integration-common:24.3.0'
     api 'org.apache.pdfbox:pdfbox:2.0.21'
 
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.12'
